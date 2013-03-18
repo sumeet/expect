@@ -56,6 +56,20 @@ class ExpectTestCase(unittest.TestCase):
         assert isinstance(self.obj.method('c'), Mock)
         assert isinstance(self.obj.method('d'), Mock)
 
+    def test_raises_exception_if_should_receive_method_but_isnt_called(self):
+        self.expect(self.obj).should_receive('method')
+        try:
+            self.expect.verify()
+        except AssertionError, e:
+            pass
+        message = 'Expected %r.method to be called but it was not' % self.obj
+        self.assertEqual(message, str(e))
+
+    def test_does_not_raise_exception_if_should_receive_is_called(self):
+        self.expect(self.obj).should_receive('method')
+        self.obj.method('any args')
+        self.expect.verify()
+
 
 if __name__ == '__main__':
     unittest.main()

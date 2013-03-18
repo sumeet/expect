@@ -2,6 +2,7 @@ from mock import Mock
 from mock import patch
 
 from args import Args
+from expectation import Expectation
 from stub import Stub
 
 
@@ -19,6 +20,7 @@ class Expect(object):
         self._patchers = []
         self._make_default_value = make_default_value
         self._stubs = {}
+        self._expectations = []
 
     def __call__(self, obj):
         return ExpectCalled(obj, self)
@@ -28,14 +30,21 @@ class Expect(object):
         return self._make_default_value
 
     def add_patch(self, obj, method_name, stub):
-        patcher = patch.object(obj, method_name, new=stub)
+        patcher = patch.object(obj, method_name, side_effect=stub)
         patcher.start()
         self._patchers.append(patcher)
+
+    def add_expectation(self, expectation):
+        self._expectations.append(expectation)
 
     def reset(self):
         for patcher in self._patchers:
             patcher.stop()
         del self._patchers[:]
+
+    def verify(self):
+        for expectation in self._expectations:
+            expectation.verify()
 
     def get_stub(self, method_name):
         if method_name not in self._stubs:
@@ -57,6 +66,10 @@ class ExpectCalled(object):
         self._expect.add_patch(self._obj, method_name, stub)
         return StubCalled(stub, self._expect)
 
+    def should_receive(self, method_name):
+        self.stub(method_name)
+        self._expect.add_expectation(Expectation(self._obj, method_name))
+
 
 class StubCalled(object):
 
@@ -72,10 +85,10 @@ class StubCalled(object):
         args = Args(args, kwargs)
         self._stub.add_return_value(args, default_value)
         self._stub.unset_default_return_value()
-        return WithCalled(args, self._stub)
+        return StubCalledThenWithCalled(args, self._stub)
 
 
-class WithCalled(object):
+class StubCalledThenWithCalled(object):
 
     def __init__(self, args, stub):
         self._args = args
