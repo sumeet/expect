@@ -70,6 +70,16 @@ class ExpectTestCase(unittest.TestCase):
         self.obj.method('any args')
         self.expect.verify()
 
+    def test_should_receive_specific_arguments_raises_exception(self):
+        self.expect(self.obj).should_receive('method').with_(1, a=2)
+        self.obj.method()
+        self.assertRaises(AssertionError, self.expect.verify)
+
+    def test_should_receive_specific_arguments_raises_nothing_when_called(self):
+        self.expect(self.obj).should_receive('method').with_(1, a=2)
+        self.obj.method(1, a=2)
+        self.expect.verify()
+
 
 if __name__ == '__main__':
     unittest.main()

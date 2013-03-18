@@ -68,7 +68,18 @@ class ExpectCalled(object):
 
     def should_receive(self, method_name):
         self.stub(method_name)
-        self._expect.add_expectation(Expectation(self._obj, method_name))
+        expectation = Expectation(self._obj, method_name)
+        self._expect.add_expectation(expectation)
+        return ShouldReceiveCalled(expectation)
+
+
+class ShouldReceiveCalled(object):
+
+    def __init__(self, expectation):
+        self._expectation = expectation
+
+    def with_(self, *args, **kwargs):
+        self._expectation.set_args(Args(args, kwargs))
 
 
 class StubCalled(object):
