@@ -1,17 +1,9 @@
 from collections import namedtuple
 
-
-from mock import call
+from args import Args
 
 
 class UnknownArgumentsError(Exception): pass
-
-
-class Args(namedtuple('Args', 'args kwargs')):
-
-    @classmethod
-    def make(cls, *args, **kwargs):
-        return cls(args, kwargs)
 
 
 MethodCall = namedtuple('MethodCall', 'name args')
