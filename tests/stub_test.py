@@ -1,9 +1,7 @@
-from collections import namedtuple
 import unittest
 
 from exam.decorators import fixture
 from mock import Mock
-from mock import call
 
 from stub import Args
 from stub import Stub
@@ -22,5 +20,5 @@ class StubTestCase(unittest.TestCase):
         self.assertRaises(UnknownArgumentsError, self.stub, 'other', 'args')
 
     def test_can_have_a_default_return_value_for_any_arguments(self):
-        self.stub.add_default_return_value(self.return_value)
+        self.stub.set_default_return_value(self.return_value)
         self.assertEqual(self.return_value, self.stub('any', 'args'))

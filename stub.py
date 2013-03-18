@@ -29,13 +29,16 @@ class Stub(object):
 
     def __init__(self):
         self._return_values = []
-        self._default_return_value = NoReturnValue
+        self.unset_default_return_value()
 
     def add_return_value(self, args, return_value):
         self._return_values.append(ReturnValue(args, return_value))
 
-    def add_default_return_value(self, return_value):
+    def set_default_return_value(self, return_value):
         self._default_return_value = ReturnValue.default(return_value)
+
+    def unset_default_return_value(self):
+        self._default_return_value = NoReturnValue
 
     def __call__(self, *args, **kwargs):
         args = Args(args, kwargs)
