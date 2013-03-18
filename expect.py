@@ -18,6 +18,7 @@ class Expect(object):
     def __init__(self, make_default_value=make_mock):
         self._patchers = []
         self._make_default_value = make_default_value
+        self._stubs = {}
 
     def __call__(self, obj):
         return ExpectCalled(obj, self)
@@ -36,15 +37,21 @@ class Expect(object):
             patcher.stop()
         del self._patchers[:]
 
+    def get_stub(self, method_name):
+        if method_name not in self._stubs:
+            self._stubs[method_name] = Stub(method_name)
+        return self._stubs[method_name]
+
 
 class ExpectCalled(object):
 
     def __init__(self, obj, expect):
         self._obj = obj
         self._expect = expect
+        self._stubs = {}
 
     def stub(self, method_name):
-        stub = Stub(method_name)
+        stub = self._expect.get_stub(method_name)
         default_value = self._expect.make_default_value(method_name)
         stub.set_default_return_value(default_value)
         self._expect.add_patch(self._obj, method_name, stub)

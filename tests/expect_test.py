@@ -46,6 +46,16 @@ class ExpectTestCase(unittest.TestCase):
         self.assertEqual(123, self.obj.method(1, a=2))
         self.assertRaises(UnknownArgumentsError, self.obj.method)
 
+    def test_can_have_separate_return_values_for_different_arguments(self):
+        self.expect(self.obj).stub('method').with_('a').and_return(123)
+        self.expect(self.obj).stub('method').with_('b').and_return(234)
+        self.expect(self.obj).stub('method').with_('c')
+        self.expect(self.obj).stub('method')
+        self.assertEqual(123, self.obj.method('a'))
+        self.assertEqual(234, self.obj.method('b'))
+        assert isinstance(self.obj.method('c'), Mock)
+        assert isinstance(self.obj.method('d'), Mock)
+
 
 if __name__ == '__main__':
     unittest.main()
