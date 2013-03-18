@@ -34,7 +34,7 @@ class ExpectCalled(object):
         self._expect = expect
 
     def stub(self, method_name):
-        stub = Stub('method_name')
+        stub = Stub(method_name)
         default_value = self._expect.make_default_value(method_name)
         stub.set_default_return_value(default_value)
         patcher = patch.object(self._obj, method_name, new=stub)
