@@ -28,6 +28,11 @@ class ExpectTestCase(unittest.TestCase):
         assert isinstance(self.obj.method(1, a=2, b='1234'), Mock)
         self.assertRaises(UnknownArgumentsError, self.obj.method)
 
+    def test_can_add_custom_return_value_for_any_arguments(self):
+        self.expect(self.obj).stub('method').and_return(123)
+        self.assertEquals(123, self.obj.method())
+        self.assertEquals(123, self.obj.method(1, a=2, b='1234'))
+
 
 if __name__ == '__main__':
     unittest.main()
