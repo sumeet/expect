@@ -27,9 +27,14 @@ class NoReturnValue(object):
 
 class Stub(object):
 
-    def __init__(self):
+    def __init__(self, name):
+        self._name = name
         self._return_values = []
         self.unset_default_return_value()
+
+    @property
+    def name(self):
+        return self._name
 
     def add_return_value(self, args, return_value):
         self._return_values.append(ReturnValue(args, return_value))

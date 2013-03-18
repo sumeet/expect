@@ -10,7 +10,7 @@ from stub import UnknownArgumentsError
 
 class StubTestCase(unittest.TestCase):
 
-    stub = fixture(Stub)
+    stub = fixture(Stub, name='StubName')
     return_value = fixture(Mock, name='return_value')
 
     def test_can_have_a_return_value_for_specific_arguments(self):
