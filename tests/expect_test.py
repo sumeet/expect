@@ -80,6 +80,19 @@ class ExpectTestCase(unittest.TestCase):
         self.obj.method(1, a=2)
         self.expect.verify()
 
+    def test_should_receive_multiple_expectations_per_method_failed(self):
+        self.expect(self.obj).should_receive('method').with_()
+        self.expect(self.obj).should_receive('method').with_(1, a=2)
+        self.obj.method(1, a=2)
+        self.assertRaises(AssertionError, self.expect.verify)
+
+    def test_should_receive_multiple_expectations_per_method_passed(self):
+        self.expect(self.obj).should_receive('method').with_()
+        self.expect(self.obj).should_receive('method').with_(1, a=2)
+        self.obj.method(1, a=2)
+        self.obj.method()
+        self.expect.verify()
+
 
 if __name__ == '__main__':
     unittest.main()
