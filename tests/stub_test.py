@@ -22,3 +22,6 @@ class StubTestCase(unittest.TestCase):
     def test_can_have_a_default_return_value_for_any_arguments(self):
         self.stub.set_default_return_value(self.return_value)
         self.assertEqual(self.return_value, self.stub('any', 'args'))
+
+    def test_repr_shows_its_name(self):
+        self.assertEqual("Stub(name='StubName')", repr(self.stub))

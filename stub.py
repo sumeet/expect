@@ -53,6 +53,9 @@ class Stub(object):
         else:
             raise UnknownArgumentsError(args)
 
+    def __repr__(self):
+        return '%s(name=%r)' % (type(self).__name__, self.name)
+
     def _get_return_value(self, args):
         for return_value in self._return_values:
             if return_value.args == args:
