@@ -7,9 +7,7 @@ class Expectation(object):
 
     def verify(self):
         if not self._args:
-            if self._method.called == False:
-                raise AssertionError('Expected %r.%s to be called but it was not' %
-                                    (self._obj, self._method_name))
+            self._assert_method_called()
         else:
             self._method.assert_any_call(*self._args.args, **self._args.kwargs)
 
@@ -19,3 +17,8 @@ class Expectation(object):
     @property
     def _method(self):
         return getattr(self._obj, self._method_name)
+
+    def _assert_method_called(self):
+        if self._method.called == False:
+            raise AssertionError('Expected %r.%s to be called but it was not' %
+                                 (self._obj, self._method_name))
