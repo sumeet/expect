@@ -13,7 +13,7 @@ class ExpectTestCase(unittest.TestCase):
     def obj(self):
         class Obj(object):
             def method(self):
-                return
+                return 'some_string'
         return Obj()
 
     expect = fixture(lambda self: create_new_expect())
@@ -30,8 +30,13 @@ class ExpectTestCase(unittest.TestCase):
 
     def test_can_add_custom_return_value_for_any_arguments(self):
         self.expect(self.obj).stub('method').and_return(123)
-        self.assertEquals(123, self.obj.method())
-        self.assertEquals(123, self.obj.method(1, a=2, b='1234'))
+        self.assertEqual(123, self.obj.method())
+        self.assertEqual(123, self.obj.method(1, a=2, b='1234'))
+
+    def test_can_be_reset(self):
+        self.expect(self.obj).stub('method')
+        self.expect.reset()
+        self.assertEqual('some_string', self.obj.method())
 
 
 if __name__ == '__main__':

@@ -26,6 +26,16 @@ class Expect(object):
     def make_default_value(self):
         return self._make_default_value
 
+    def add_patch(self, obj, method_name, stub):
+        patcher = patch.object(obj, method_name, new=stub)
+        patcher.start()
+        self._patchers.append(patcher)
+
+    def reset(self):
+        for patcher in self._patchers:
+            patcher.stop()
+        del self._patchers[:]
+
 
 class ExpectCalled(object):
 
@@ -37,8 +47,7 @@ class ExpectCalled(object):
         stub = Stub(method_name)
         default_value = self._expect.make_default_value(method_name)
         stub.set_default_return_value(default_value)
-        patcher = patch.object(self._obj, method_name, new=stub)
-        patcher.start()
+        self._expect.add_patch(self._obj, method_name, stub)
         return StubCalled(stub, self._expect)
 
 
