@@ -37,6 +37,7 @@ class Stub(object):
         return self._name
 
     def add_return_value(self, args, return_value):
+        self._remove_return_value(args)
         self._return_values.append(ReturnValue(args, return_value))
 
     def set_default_return_value(self, return_value):
@@ -61,3 +62,7 @@ class Stub(object):
             if return_value.args == args:
                 return return_value
         return self._default_return_value
+
+    def _remove_return_value(self, args):
+        self._return_values = [return_value for return_value in
+                               self._return_values if return_value.args != args]

@@ -62,5 +62,18 @@ class StubCalled(object):
 
     def with_(self, *args, **kwargs):
         default_value = self._expect.make_default_value(self._stub.name)
-        self._stub.add_return_value(Args(args, kwargs), default_value)
+        args = Args(args, kwargs)
+        self._stub.add_return_value(args, default_value)
         self._stub.unset_default_return_value()
+        return WithCalled(args, self._stub)
+
+
+class WithCalled(object):
+
+    def __init__(self, args, stub):
+        self._args = args
+        self._stub = stub
+
+    def and_return(self, return_value):
+        self._stub.unset_default_return_value()
+        self._stub.add_return_value(self._args, return_value)

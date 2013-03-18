@@ -18,6 +18,9 @@ class ExpectTestCase(unittest.TestCase):
 
     expect = fixture(lambda self: create_new_expect())
 
+    def tearDown(self):
+        self.expect.reset()
+
     def test_can_stub_a_method_to_return_a_mock_for_any_arguments(self):
         self.expect(self.obj).stub('method')
         assert isinstance(self.obj.method(), Mock)
@@ -37,6 +40,11 @@ class ExpectTestCase(unittest.TestCase):
         self.expect(self.obj).stub('method')
         self.expect.reset()
         self.assertEqual('some_string', self.obj.method())
+
+    def test_can_add_custom_return_value_for_specific_arguments(self):
+        self.expect(self.obj).stub('method').with_(1, a=2).and_return(123)
+        self.assertEqual(123, self.obj.method(1, a=2))
+        self.assertRaises(UnknownArgumentsError, self.obj.method)
 
 
 if __name__ == '__main__':
