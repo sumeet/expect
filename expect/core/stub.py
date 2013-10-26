@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from expect.args import Args
+from expect.core.args import Args
 
 
 class UnknownArgumentsError(Exception): pass

@@ -3,9 +3,9 @@ import unittest
 from exam.decorators import fixture
 from mock import Mock
 
-from expect.stub import Args
-from expect.stub import Stub
-from expect.stub import UnknownArgumentsError
+from expect.core.stub import Args
+from expect.core.stub import Stub
+from expect.core.stub import UnknownArgumentsError
 
 
 class StubTestCase(unittest.TestCase):
