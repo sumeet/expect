@@ -1,0 +1,10 @@
+import unittest
+
+from expect.core.args import Args
+
+
+class ArgsTestCase(unittest.TestCase):
+
+    def test_has_a_repr_that_looks_like_call_arguments(self):
+        args = Args.make(1, 2, kw1='a string', kw2=3)
+        self.assertEqual("(1, 2, kw1='a string', kw2=3)", repr(args))
