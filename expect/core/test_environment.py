@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from mock import patch
 
-from expect.util import singleton
+from expect.util import falsey_object
 
 
 class AddedStub(namedtuple('AddedStub', 'obj name stub')):
@@ -42,8 +42,4 @@ class TestEnvironment(object):
             expectation.verify()
 
 
-@singleton
-class NoStubFound(object):
-
-    def __nonzero__(self):
-        return False
+NoStubFound = falsey_object('NoStubFound')

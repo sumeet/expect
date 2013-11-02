@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from expect.core.args import AnyArgs
 from expect.core.args import Args
-from expect.util import singleton
+from expect.util import falsey_object
 
 
 class UnknownArgumentsError(Exception):
@@ -72,8 +72,4 @@ class Stub(object):
         return NoValueFound
 
 
-@singleton
-class NoValueFound(object):
-
-    def __nonzero__(self):
-        return False
+NoValueFound = falsey_object('NoValueFound')
