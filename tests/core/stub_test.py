@@ -46,3 +46,11 @@ class StubTestCase(unittest.TestCase):
                              "('some', 'args').", str(e))
         else:
             raise AssertionError('expected UnknownArgumentsError')
+
+    def test_records_calls_made_to_it(self):
+        self.stub.set_default_response('set so it can be called with any args')
+        self.stub('some', 'args')
+        self.stub('more args and kwargs', kwarg=1)
+        self.assertEqual([Args.make('some', 'args'),
+                          Args.make('more args and kwargs', kwarg=1)],
+                        self.stub.was_called_with)

@@ -27,10 +27,7 @@ class Stub(object):
     def __init__(self, name):
         self._name = name
         self._responses = []
-
-    @property
-    def name(self):
-        return self._name
+        self._requests = []
 
     def add_response(self, args, response):
         self._remove_response(args)
@@ -39,13 +36,23 @@ class Stub(object):
     def set_default_response(self, response):
         self.add_response(AnyArgs, response)
 
+
     def __call__(self, *args, **kwargs):
         args = Args(args, kwargs)
+        self._requests.append(args)
         response = self._find_response(args)
         if response:
             return response.return_value
         else:
             raise UnknownArgumentsError(self, args)
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def was_called_with(self):
+        return self._requests
 
     def __repr__(self):
         return '%s(%r)' % (type(self).__name__, self.name)
