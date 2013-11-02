@@ -36,4 +36,13 @@ class StubTestCase(unittest.TestCase):
         self.assertEqual(other_return_value, self.stub('any', 'args'))
 
     def test_repr_shows_its_name(self):
-        self.assertEqual("Stub(name='StubName')", repr(self.stub))
+        self.assertEqual("Stub('StubName')", repr(self.stub))
+
+    def test_has_a_helpful_error_message_when_no_return_value_available(self):
+        try:
+            self.stub('some', 'args')
+        except UnknownArgumentsError, e:
+            self.assertEqual('StubName was called with unexpected args '
+                             "('some', 'args').", str(e))
+        else:
+            raise AssertionError('expected UnknownArgumentsError')

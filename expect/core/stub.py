@@ -5,7 +5,15 @@ from expect.core.args import Args
 from expect.util import singleton
 
 
-class UnknownArgumentsError(Exception): pass
+class UnknownArgumentsError(Exception):
+
+    def __init__(self, stub, args):
+        self._stub = stub
+        self._args = args
+
+    def __str__(self):
+        return '%s was called with unexpected args %r.' % (self._stub.name,
+                                                           self._args)
 
 
 MethodCall = namedtuple('MethodCall', 'name args')
@@ -37,10 +45,10 @@ class Stub(object):
         if response:
             return response.return_value
         else:
-            raise UnknownArgumentsError(args)
+            raise UnknownArgumentsError(self, args)
 
     def __repr__(self):
-        return '%s(name=%r)' % (type(self).__name__, self.name)
+        return '%s(%r)' % (type(self).__name__, self.name)
 
     def _remove_response(self, args):
         self._responses = [r for r in self._responses if r.args != args]
