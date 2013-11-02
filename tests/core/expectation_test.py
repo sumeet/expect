@@ -47,3 +47,9 @@ class ExpectationTestCase(unittest.TestCase):
                              "but it wasn't.", str(e))
         else:
             raise AssertionError('expected AssertionError')
+
+    def test_can_set_args_after_object_is_created(self):
+        expectation = Expectation(self.stub, Args.make(1))
+        expectation.set_call_args(AnyArgs)
+        self.stub('any args')
+        expectation.verify()

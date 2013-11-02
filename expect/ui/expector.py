@@ -1,6 +1,8 @@
 from mock import Mock
 
+from expect.core.args import AnyArgs
 from expect.core.args import Args
+from expect.core.expectation import Expectation
 from expect.core.stub import Stub
 from expect.core.test_environment import TestEnvironment
 
@@ -22,6 +24,12 @@ class Expector(object):
         return ExpectorWithObj(obj, self._test_environment,
                                self._default_return_value_creator)
 
+    def reset(self):
+        self._test_environment.reset_patches()
+
+    def verify(self):
+        self._test_environment.verify_expectations()
+
 
 class ExpectorWithObj(object):
     """The return value of expect(obj)."""
@@ -37,6 +45,12 @@ class ExpectorWithObj(object):
             stub.name)
         stub.set_default_response(default_return_value)
         return StubExpector(stub, default_return_value)
+
+    def should_receive(self, name):
+        stub = self._add_or_find_existing_stub(name)
+        expectation = Expectation(stub, AnyArgs)
+        self._test_environment.add_mock_expectation(expectation)
+        return ShouldReceiveExpector(expectation, self.stub(name))
 
     def _add_or_find_existing_stub(self, name):
         stub = self._test_environment.find_stub(self._obj, name)
@@ -74,3 +88,18 @@ class StubWithArgsExpector(object):
 
     def and_return(self, return_value):
         self._stub.add_response(self._args, return_value)
+
+
+class ShouldReceiveExpector(object):
+    """The return value of expect(obj).should_receive('method_name')."""
+
+    def __init__(self, expectation, stub_expector):
+        self._expectation = expectation
+        self._stub_expector = stub_expector
+
+    def with_(self, *args, **kwargs):
+        self._expectation.set_call_args(Args(args, kwargs))
+        return self._stub_expector.with_(*args, **kwargs)
+
+    def and_return(self, return_value):
+        self._stub_expector.and_return(return_value)

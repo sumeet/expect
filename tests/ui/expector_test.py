@@ -7,16 +7,16 @@ from expect.core.stub import UnknownArgumentsError
 from expect.ui.expector import Expector
 
 
-class ExpectorTestCase(unittest.TestCase):
+class MyObj(object):
+    def method(self):
+        return 123
+    def __repr__(self):
+        return 'MyObj'
 
-    @fixture
-    def my_obj(self):
-        class MyObj(object):
-            def method(self):
-                return 123
-            def __repr__(self):
-                return 'MyObj'
-        return MyObj()
+
+class StubExpectorTestCase(unittest.TestCase):
+
+    my_obj = fixture(MyObj)
 
     def test_stubbing_without_options_returns_default_value(self):
         creator = Mock(name='creator', create=lambda name: name)
@@ -69,3 +69,46 @@ class ExpectorTestCase(unittest.TestCase):
 
         self.assertEqual('return_value1', obj1.stubbable())
         self.assertEqual('return_value2', obj2.stubbable())
+
+    def test_can_reset_test_environment(self):
+        expect = Expector()
+        original_method = self.my_obj.method
+        expect(self.my_obj).stub('method')
+        self.assertNotEqual(original_method, self.my_obj.method)
+
+        expect.reset()
+        self.assertEqual(original_method, self.my_obj.method)
+
+
+class ShouldReceiveExpectorTestCase(unittest.TestCase):
+
+    my_obj = fixture(MyObj)
+    expect = fixture(Expector)
+
+    def test_should_receive_with_no_options_sets_up_an_expectation(self):
+        self.expect(self.my_obj).should_receive('method')
+        self.assertRaises(AssertionError, self.expect.verify)
+
+        self.my_obj.method()
+        self.expect.verify()
+
+    def test_makes_expectations_for_specific_args(self):
+        self.expect(self.my_obj).should_receive('method') \
+            .with_('specific', 'args')
+        self.assertRaises(UnknownArgumentsError,
+                          lambda: self.my_obj.method('wrong args'))
+
+        self.assertRaises(AssertionError, self.expect.verify)
+
+        self.my_obj.method('specific', 'args')
+        self.expect.verify()
+
+    def test_returns_values_and_makes_expectations_for_any_args(self):
+        self.expect(self.my_obj).should_receive('method').and_return('return')
+        self.assertEqual('return', self.my_obj.method('any', 'args'))
+        self.expect.verify()
+
+    def test_returns_values_and_expects_specific_args(self):
+        self.expect(self.my_obj).should_receive('method').with_('args') \
+            .and_return('return_value')
+        self.assertEqual('return_value', self.my_obj.method('args'))

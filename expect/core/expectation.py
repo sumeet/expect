@@ -10,3 +10,6 @@ class Expectation(object):
                 return
         raise AssertionError("Expected %s%r to be called but it wasn't." %
                              (self._stub.name, self._call_args))
+
+    def set_call_args(self, args):
+        self._call_args = args
