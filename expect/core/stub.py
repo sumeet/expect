@@ -9,9 +9,9 @@ class UnknownArgumentsError(Exception): pass
 MethodCall = namedtuple('MethodCall', 'name args')
 
 
-class ReturnValue(namedtuple('ReturnValue', 'args return_value')):
+class StubResponse(namedtuple('StubResponse', 'args return_value')):
 
-    has_value = True
+    was_defined = True
 
     @classmethod
     def default(cls, return_value):
@@ -20,49 +20,45 @@ class ReturnValue(namedtuple('ReturnValue', 'args return_value')):
     class _no_args(object): pass
 
 
-class NoReturnValue(object):
+class UndefinedStubResponse(object):
 
-    has_value = False
+    was_defined = False
 
 
 class Stub(object):
 
     def __init__(self, name):
         self._name = name
-        self._return_values = []
-        self.unset_default_return_value()
+        self._responses = []
+        self._default_response = UndefinedStubResponse
 
     @property
     def name(self):
         return self._name
 
-    def add_return_value(self, args, return_value):
-        self._remove_return_value(args)
-        self._return_values.append(ReturnValue(args, return_value))
+    def add_response(self, args, response):
+        self._remove_response(args)
+        self._responses.append(StubResponse(args, response))
 
-    def set_default_return_value(self, return_value):
-        self._default_return_value = ReturnValue.default(return_value)
-
-    def unset_default_return_value(self):
-        self._default_return_value = NoReturnValue
+    def set_default_response(self, response):
+        self._default_response = StubResponse.default(response)
 
     def __call__(self, *args, **kwargs):
         args = Args(args, kwargs)
-        return_value = self._get_return_value(args)
-        if return_value.has_value:
-            return return_value.return_value
+        response = self._find_response(args)
+        if response.was_defined:
+            return response.return_value
         else:
             raise UnknownArgumentsError(args)
 
     def __repr__(self):
         return '%s(name=%r)' % (type(self).__name__, self.name)
 
-    def _get_return_value(self, args):
-        for return_value in self._return_values:
+    def _remove_response(self, args):
+        self._responses = [r for r in self._responses if r.args != args]
+
+    def _find_response(self, args):
+        for return_value in self._responses:
             if return_value.args == args:
                 return return_value
-        return self._default_return_value
-
-    def _remove_return_value(self, args):
-        self._return_values = [return_value for return_value in
-                               self._return_values if return_value.args != args]
+        return self._default_response
