@@ -1,5 +1,7 @@
 from collections import namedtuple
 
+from expect.util import singleton
+
 
 class Args(namedtuple('Args', 'args kwargs')):
 
@@ -14,13 +16,11 @@ class Args(namedtuple('Args', 'args kwargs')):
         return '(' + ', '.join(positional + keywords) + ')'
 
 
-# XXX: move this util?
-def singleton(cls):
-    return cls()
-
-
 @singleton
-class NoArgs(object):
+class AnyArgs(object):
 
-    def __nonzero__(self):
-        return False
+    def __eq__(self, other):
+        return True
+
+    def __repr__(self):
+        return '(*ANY ARGS)'

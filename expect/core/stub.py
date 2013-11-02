@@ -1,6 +1,8 @@
 from collections import namedtuple
 
+from expect.core.args import AnyArgs
 from expect.core.args import Args
+from expect.util import singleton
 
 
 class UnknownArgumentsError(Exception): pass
@@ -9,20 +11,7 @@ class UnknownArgumentsError(Exception): pass
 MethodCall = namedtuple('MethodCall', 'name args')
 
 
-class StubResponse(namedtuple('StubResponse', 'args return_value')):
-
-    was_defined = True
-
-    @classmethod
-    def default(cls, return_value):
-        return cls(cls._no_args, return_value)
-
-    class _no_args(object): pass
-
-
-class UndefinedStubResponse(object):
-
-    was_defined = False
+StubResponse = namedtuple('StubResponse', 'args return_value')
 
 
 class Stub(object):
@@ -30,7 +19,6 @@ class Stub(object):
     def __init__(self, name):
         self._name = name
         self._responses = []
-        self._default_response = UndefinedStubResponse
 
     @property
     def name(self):
@@ -41,12 +29,12 @@ class Stub(object):
         self._responses.append(StubResponse(args, response))
 
     def set_default_response(self, response):
-        self._default_response = StubResponse.default(response)
+        self.add_response(AnyArgs, response)
 
     def __call__(self, *args, **kwargs):
         args = Args(args, kwargs)
         response = self._find_response(args)
-        if response.was_defined:
+        if response:
             return response.return_value
         else:
             raise UnknownArgumentsError(args)
@@ -61,4 +49,11 @@ class Stub(object):
         for return_value in self._responses:
             if return_value.args == args:
                 return return_value
-        return self._default_response
+        return NoValueFound
+
+
+@singleton
+class NoValueFound(object):
+
+    def __nonzero__(self):
+        return False
