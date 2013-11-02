@@ -5,6 +5,8 @@ class Expectation(object):
         self._call_args = call_args
 
     def verify(self):
-        if self._call_args not in self._stub.was_called_with:
-            raise AssertionError('Expected %s%r to be called but it '
-                                 "wasn't." % (self._stub.name, self._call_args))
+        for args in self._stub.was_called_with:
+            if self._call_args.matches_args(args):
+                return
+        raise AssertionError("Expected %s%r to be called but it wasn't." %
+                             (self._stub.name, self._call_args))

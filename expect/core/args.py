@@ -15,11 +15,14 @@ class Args(namedtuple('Args', 'args kwargs')):
         positional = map(repr, self.args)
         return '(' + ', '.join(positional + keywords) + ')'
 
+    def matches_args(self, args):
+        return self == args
+
 
 @singleton
 class AnyArgs(object):
 
-    def __eq__(self, other):
+    def matches_args(self, args):
         return True
 
     def __repr__(self):

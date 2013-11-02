@@ -19,7 +19,10 @@ class UnknownArgumentsError(Exception):
 MethodCall = namedtuple('MethodCall', 'name args')
 
 
-StubResponse = namedtuple('StubResponse', 'args return_value')
+class StubResponse(namedtuple('StubResponse', 'args return_value')):
+
+    def matches_args(self, args):
+        return self.args.matches_args(args)
 
 
 class Stub(object):
@@ -29,13 +32,15 @@ class Stub(object):
         self._responses = []
         self._requests = []
 
-    def add_response(self, args, response):
+    def add_response(self, args, return_value):
         self._remove_response(args)
-        self._responses.append(StubResponse(args, response))
+        self._responses.append(StubResponse(args, return_value))
 
     def set_default_response(self, response):
         self.add_response(AnyArgs, response)
 
+    def remove_default_response(self):
+        self._remove_response(AnyArgs)
 
     def __call__(self, *args, **kwargs):
         args = Args(args, kwargs)
@@ -61,9 +66,9 @@ class Stub(object):
         self._responses = [r for r in self._responses if r.args != args]
 
     def _find_response(self, args):
-        for return_value in self._responses:
-            if return_value.args == args:
-                return return_value
+        for response in self._responses:
+            if response.matches_args(args):
+                return response
         return NoValueFound
 
 
