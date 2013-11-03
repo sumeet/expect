@@ -1,20 +1,24 @@
-import unittest
+import re
 
 from exam.decorators import fixture
+import unittest2
 
 from expect.core.args import Args
 from expect.core.args import AnyArgs
+from expect.core.expectation import ShouldNotReceiveExpectation
 from expect.core.expectation import ShouldReceiveExpectation
 from expect.core.stub import Stub
 
 
-class ShouldReceiveExpectationTestCase(unittest.TestCase):
+def create_stub():
+    stub = Stub('stub')
+    stub.set_default_response('response')
+    return stub
 
-    @fixture
-    def stub(self):
-        stub = Stub('stub')
-        stub.set_default_response('response')
-        return stub
+
+class ShouldReceiveExpectationTestCase(unittest2.TestCase):
+
+    stub = fixture(lambda self: create_stub())
 
     def test_verifies_a_method_was_called_with_the_right_arguments(self):
         expectation = ShouldReceiveExpectation(self.stub, Args.make(1))
@@ -53,3 +57,23 @@ class ShouldReceiveExpectationTestCase(unittest.TestCase):
         expectation.set_call_args(AnyArgs)
         self.stub('any args')
         expectation.verify()
+
+
+class ShouldNotReceiveExpectationTestCase(unittest2.TestCase):
+
+    stub = fixture(lambda self: create_stub())
+    expectation = fixture(lambda self: ShouldNotReceiveExpectation(self.stub))
+
+    def test_verifies_that_a_stub_was_never_called(self):
+        self.expectation.verify()
+
+        self.stub('call with any args')
+        self.assertRaises(AssertionError, self.expectation.verify)
+
+    def test_shows_a_useful_error_message_when_the_expectation_fails(self):
+        self.stub('call with any args')
+        error_msg = ('Expected stub to not be called, but it was called 1 '
+                     'time(s).')
+        with self.assertRaisesRegexp(AssertionError,
+                                     r'^%s$' % re.escape(error_msg)):
+            self.expectation.verify()

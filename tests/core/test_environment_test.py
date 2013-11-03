@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 
 from exam.decorators import fixture
 from mock import Mock
@@ -10,7 +10,7 @@ from expect.core.stub import Stub
 from expect.core.test_environment import TestEnvironment
 
 
-class TestEnvironmentTestCase(unittest.TestCase):
+class TestEnvironmentTestCase(unittest2.TestCase):
 
     obj = fixture(Mock, name='obj')
     test_environment = fixture(TestEnvironment)

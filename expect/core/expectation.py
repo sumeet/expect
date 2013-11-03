@@ -13,3 +13,14 @@ class ShouldReceiveExpectation(object):
 
     def set_call_args(self, args):
         self._call_args = args
+
+
+class ShouldNotReceiveExpectation(object):
+
+    def __init__(self, stub):
+        self._stub = stub
+
+    def verify(self):
+        if self._stub.was_called_with:
+            raise AssertionError('Expected stub to not be called, but it was '
+                                 'called 1 time(s).')

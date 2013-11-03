@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 
 from exam.decorators import fixture
 from mock import Mock
@@ -8,7 +8,7 @@ from expect.core.stub import Stub
 from expect.core.stub import UnknownArgumentsError
 
 
-class StubTestCase(unittest.TestCase):
+class StubTestCase(unittest2.TestCase):
 
     stub = fixture(Stub, name='StubName')
     return_value = fixture(Mock, name='return_value')

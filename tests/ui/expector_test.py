@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 
 from exam.decorators import fixture
 from mock import Mock
@@ -14,7 +14,7 @@ class MyObj(object):
         return 'MyObj'
 
 
-class StubExpectorTestCase(unittest.TestCase):
+class StubExpectorTestCase(unittest2.TestCase):
 
     my_obj = fixture(MyObj)
 
@@ -80,7 +80,7 @@ class StubExpectorTestCase(unittest.TestCase):
         self.assertEqual(original_method, self.my_obj.method)
 
 
-class ShouldReceiveExpectorTestCase(unittest.TestCase):
+class ShouldReceiveExpectorTestCase(unittest2.TestCase):
 
     my_obj = fixture(MyObj)
     expect = fixture(Expector)
