@@ -2,7 +2,7 @@ from mock import Mock
 
 from expect.core.args import AnyArgs
 from expect.core.args import Args
-from expect.core.expectation import Expectation
+from expect.core.expectation import ShouldReceiveExpectation
 from expect.core.stub import Stub
 from expect.core.test_environment import TestEnvironment
 
@@ -48,7 +48,7 @@ class ExpectorWithObj(object):
 
     def should_receive(self, name):
         stub = self._add_or_find_existing_stub(name)
-        expectation = Expectation(stub, AnyArgs)
+        expectation = ShouldReceiveExpectation(stub, AnyArgs)
         self._test_environment.add_mock_expectation(expectation)
         return ShouldReceiveExpector(expectation, self.stub(name))
 

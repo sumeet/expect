@@ -5,7 +5,7 @@ from mock import Mock
 
 from expect.core.args import AnyArgs
 from expect.core.args import Args
-from expect.core.expectation import Expectation
+from expect.core.expectation import ShouldReceiveExpectation
 from expect.core.stub import Stub
 from expect.core.test_environment import TestEnvironment
 
@@ -33,8 +33,9 @@ class TestEnvironmentTestCase(unittest.TestCase):
     def test_verifies_mock_expectations(self):
         stub = Stub('stub')
         stub.set_default_response('response')
-        passing_expectation = Expectation(stub, AnyArgs)
-        failing_expectation = Expectation(stub, Args.make('some args'))
+        passing_expectation = ShouldReceiveExpectation(stub, AnyArgs)
+        failing_expectation = ShouldReceiveExpectation(stub,
+                                                       Args.make('some args'))
         self.test_environment.add_mock_expectation(passing_expectation)
         self.test_environment.add_mock_expectation(failing_expectation)
         stub('random args')

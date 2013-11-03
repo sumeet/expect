@@ -1,4 +1,4 @@
-class Expectation(object):
+class ShouldReceiveExpectation(object):
 
     def __init__(self, stub, call_args):
         self._stub = stub
