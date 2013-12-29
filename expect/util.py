@@ -3,5 +3,6 @@ def singleton(cls):
 
 
 def falsey_object(class_name):
-    return singleton(type(class_name, (object,),
-                          {'__nonzero__': lambda self: False}))
+    return type(class_name, (object,),
+                {'__nonzero__': lambda self: False,
+                 '__repr__': lambda self: 'falsey_object: ' + class_name})()
