@@ -61,3 +61,11 @@ class TestEnvironmentTestCase(unittest2.TestCase):
         self.test_environment.add_stub(self.obj, 'method', Stub('stub'))
         self.test_environment.reset()
         self.test_environment.reset()
+
+    def test_resets_args_called_on_stubs(self):
+        stub = Stub('stub')
+        stub.set_default_response('response')
+        self.test_environment.add_stub(self.obj, 'method', stub)
+        stub(123)
+        self.test_environment.reset()
+        self.assertEqual([], stub.was_called_with)

@@ -42,6 +42,9 @@ class Stub(object):
     def remove_default_response(self):
         self._remove_response(AnyArgs)
 
+    def reset(self):
+        del self._requests[:]
+
     def __call__(self, *args, **kwargs):
         args = Args(args, kwargs)
         self._requests.append(args)

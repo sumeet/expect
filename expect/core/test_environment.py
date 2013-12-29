@@ -10,6 +10,9 @@ class AddedStub(namedtuple('AddedStub', 'obj name stub')):
     def is_for(self, obj, name):
         return obj is self.obj and name == self.name
 
+    def clear_stub_requests(self):
+        self.stub.reset()
+
 
 class TestEnvironment(object):
 
@@ -33,6 +36,9 @@ class TestEnvironment(object):
     def reset(self):
         for patcher in self._patchers:
             patcher.stop()
+
+        for added_stub in self._added_stubs:
+            added_stub.clear_stub_requests()
 
         del self._patchers[:]
         del self._expectations[:]
