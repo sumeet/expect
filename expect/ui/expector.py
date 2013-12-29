@@ -1,3 +1,5 @@
+from functools import partial
+
 from mock import Mock
 
 from expect.core.args import AnyArgs
@@ -17,13 +19,16 @@ class DefaultReturnValueCreator(object):
 
 class Expector(object):
 
-    def __init__(self, default_return_value_creator=DefaultReturnValueCreator):
+    def __init__(self, default_return_value_creator=DefaultReturnValueCreator,
+                 **methods_to_delegate):
         self._test_environment = TestEnvironment()
         self._default_return_value_creator = default_return_value_creator
+        self._methods_to_delegate = methods_to_delegate
 
     def __call__(self, obj):
         return ExpectorWithObj(obj, self._test_environment,
-                               self._default_return_value_creator)
+                               self._default_return_value_creator,
+                               self._methods_to_delegate)
 
     def reset(self):
         self._test_environment.reset_patches()
@@ -32,13 +37,16 @@ class Expector(object):
         self._test_environment.verify_expectations()
 
 
-class ExpectorWithObj(object):
+# XXX: this has to be an old-style class to delegate magic methods
+class ExpectorWithObj:
     """The return value of expect(obj)."""
 
-    def __init__(self, obj, test_environment, default_return_value_creator):
+    def __init__(self, obj, test_environment, default_return_value_creator,
+                 methods_to_delegate):
         self._obj = obj
         self._test_environment = test_environment
         self._default_return_value_creator = default_return_value_creator
+        self._methods_to_delegate = methods_to_delegate
 
     def stub(self, name):
         stub = self._add_or_find_existing_stub(name)
@@ -58,6 +66,9 @@ class ExpectorWithObj(object):
         expectation = ShouldNotReceiveExpectation(stub)
         self._test_environment.add_mock_expectation(expectation)
         return ShouldNotReceiveExpector(expectation, self.stub(name))
+
+    def __getattr__(self, name):
+        return partial(self._methods_to_delegate[name], self._obj)
 
     def _add_or_find_existing_stub(self, name):
         stub = self._test_environment.find_stub(self._obj, name)

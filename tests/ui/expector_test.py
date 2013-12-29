@@ -140,3 +140,14 @@ class ShouldNotReceiveExpectorTestCase(unittest2.TestCase):
         self.my_obj.method(1, 2)
         with self.assertRaises(AssertionError):
             self.expect.verify()
+
+
+class ExpectorAssertionsTestCase(unittest2.TestCase):
+
+    assert_equal = fixture(Mock, name='assert_equal')
+    expect = fixture(lambda self: Expector(__eq__=self.assert_equal))
+
+    def test_can_delegate_equals(self):
+        a, b = Mock(name='a'), Mock(name='b')
+        self.expect(a) == b
+        self.assert_equal.assert_called_once_with(a, b)
