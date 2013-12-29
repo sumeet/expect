@@ -2,6 +2,7 @@ from mock import Mock
 
 from expect.core.args import AnyArgs
 from expect.core.args import Args
+from expect.core.expectation import ShouldNotReceiveExpectation
 from expect.core.expectation import ShouldReceiveExpectation
 from expect.core.stub import Stub
 from expect.core.test_environment import TestEnvironment
@@ -51,6 +52,12 @@ class ExpectorWithObj(object):
         expectation = ShouldReceiveExpectation(stub, AnyArgs)
         self._test_environment.add_mock_expectation(expectation)
         return ShouldReceiveExpector(expectation, self.stub(name))
+
+    def should_not_receive(self, name):
+        stub = self._add_or_find_existing_stub(name)
+        expectation = ShouldNotReceiveExpectation(stub)
+        self._test_environment.add_mock_expectation(expectation)
+        return ShouldNotReceiveExpector(expectation, self.stub(name))
 
     def _add_or_find_existing_stub(self, name):
         stub = self._test_environment.find_stub(self._obj, name)
@@ -103,3 +110,14 @@ class ShouldReceiveExpector(object):
 
     def and_return(self, return_value):
         self._stub_expector.and_return(return_value)
+
+
+class ShouldNotReceiveExpector(object):
+    """The return value of expect(obj).should_not_receive('method_name')."""
+
+    def __init__(self, expectation, stub_expector):
+        self._expectation = expectation
+        self._stub_expector = stub_expector
+
+    def with_(self, *args, **kwargs):
+        self._expectation.set_call_args(Args(args, kwargs))

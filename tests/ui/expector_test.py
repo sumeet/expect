@@ -112,3 +112,29 @@ class ShouldReceiveExpectorTestCase(unittest2.TestCase):
         self.expect(self.my_obj).should_receive('method').with_('args') \
             .and_return('return_value')
         self.assertEqual('return_value', self.my_obj.method('args'))
+
+
+class ShouldNotReceiveExpectorTestCase(unittest2.TestCase):
+
+    my_obj = fixture(MyObj)
+    expect = fixture(Expector)
+
+    # XXX: should we just crash as soon as the method is called instead of in
+    # the verification step? would probably require mutating Stub.
+    def test_sets_up_should_not_receive_expectations(self):
+        self.expect(self.my_obj).should_not_receive('method')
+        self.expect.verify()
+
+        self.my_obj.method('any args')
+        with self.assertRaises(AssertionError):
+            self.expect.verify()
+
+    def test_sets_up_should_not_receive_expectations_with_specific_args(self):
+        self.expect(self.my_obj).stub('method')
+        self.expect(self.my_obj).should_not_receive('method').with_(1, 2)
+        self.my_obj.method('some other args')
+        self.expect.verify()
+
+        self.my_obj.method(1, 2)
+        with self.assertRaises(AssertionError):
+            self.expect.verify()

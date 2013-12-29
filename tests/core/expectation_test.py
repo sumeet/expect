@@ -70,6 +70,16 @@ class ShouldNotReceiveExpectationTestCase(unittest2.TestCase):
         self.stub('call with any args')
         self.assertRaises(AssertionError, self.expectation.verify)
 
+    def test_verifies_a_stub_was_not_called_with_specific_arguments(self):
+        self.expectation.set_call_args(Args.make(1))
+
+        self.stub('some other args')
+        self.expectation.verify()
+
+        self.stub(1)
+        with self.assertRaises(AssertionError):
+            self.expectation.verify()
+
     def test_shows_a_useful_error_message_when_the_expectation_fails(self):
         self.stub('call with any args')
         error_msg = ('Expected stub to not be called, but it was called 1 '
