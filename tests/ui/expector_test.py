@@ -8,8 +8,10 @@ from expect.ui.expector import Expector
 
 
 class MyObj(object):
+
     def method(self):
         return 123
+
     def __repr__(self):
         return 'MyObj'
 
