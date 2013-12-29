@@ -31,7 +31,7 @@ class Expector(object):
                                self._methods_to_delegate)
 
     def reset(self):
-        self._test_environment.reset_patches()
+        self._test_environment.reset()
 
     def verify(self):
         self._test_environment.verify_expectations()

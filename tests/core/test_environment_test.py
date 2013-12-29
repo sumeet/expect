@@ -15,7 +15,7 @@ class TestEnvironmentTestCase(unittest2.TestCase):
     obj = fixture(Mock, name='obj')
     test_environment = fixture(TestEnvironment)
 
-    def test_sets_up_stubs(self):
+    def test_sets_up_and_resets_stubs(self):
         stub = Stub('stub')
         stub.set_default_response('response')
 
@@ -27,7 +27,7 @@ class TestEnvironmentTestCase(unittest2.TestCase):
         self.assertEqual('response', self.obj.method1('any', 'args'))
         self.assertEqual('response', self.obj.method2('any', 'args'))
 
-        self.test_environment.reset_patches()
+        self.test_environment.reset()
         self.assertEqual(original_methods, [self.obj.method1, self.obj.method2])
 
     def test_verifies_mock_expectations(self):
@@ -47,3 +47,17 @@ class TestEnvironmentTestCase(unittest2.TestCase):
                              "wasn't.", str(e))
         else:
             raise AssertionError('expected AssertionError')
+
+    def test_resets_mock_expectations(self):
+        stub = Stub('stub')
+        stub.set_default_response('response')
+        expectation = ShouldReceiveExpectation(stub, AnyArgs)
+        self.test_environment.add_mock_expectation(expectation)
+
+        self.test_environment.reset()
+        self.test_environment.verify_expectations()
+
+    def test_can_reset_multiple_times(self):
+        self.test_environment.add_stub(self.obj, 'method', Stub('stub'))
+        self.test_environment.reset()
+        self.test_environment.reset()

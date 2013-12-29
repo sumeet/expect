@@ -30,9 +30,12 @@ class TestEnvironment(object):
         self._patchers.append(patcher)
         patcher.start()
 
-    def reset_patches(self):
+    def reset(self):
         for patcher in self._patchers:
             patcher.stop()
+
+        del self._patchers[:]
+        del self._expectations[:]
 
     def add_mock_expectation(self, expectation):
         self._expectations.append(expectation)
