@@ -32,7 +32,7 @@ AssertionError
 >>> expect.verify()
 Traceback (most recent call last):
     ...
-AssertionError: Expected to be called once. Called 0 times.
+AssertionError: Expected <class 'MyClass'>.my_method(1) to be called but it wasn't.
 
 ```
 
