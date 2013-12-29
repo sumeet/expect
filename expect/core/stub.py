@@ -72,7 +72,4 @@ class Stub(object):
         for response in self._responses:
             if response.matches_args(args):
                 return response
-        return NoValueFound
-
-
-NoValueFound = falsey_object('NoValueFound')
+        return falsey_object('NoValueFound')

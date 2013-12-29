@@ -25,7 +25,7 @@ class TestEnvironment(object):
         for added_stub in self._added_stubs:
             if added_stub.is_for(obj, name):
                 return added_stub.stub
-        return NoStubFound
+        return falsey_object('NoStubFound')
 
     def add_stub(self, obj, name, stub):
         self._added_stubs.append(AddedStub(obj, name, stub))
@@ -49,6 +49,3 @@ class TestEnvironment(object):
     def verify_expectations(self):
         for expectation in self._expectations:
             expectation.verify()
-
-
-NoStubFound = falsey_object('NoStubFound')
