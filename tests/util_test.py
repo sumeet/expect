@@ -14,3 +14,8 @@ class FalseyObjectTestCase(unittest2.TestCase):
 
     def test_the_repr_includes_the_name(self):
         self.assertEqual('falsey_object: UniqueName', repr(self.falsey_obj))
+
+    def test_undefined_attribute_access_crashes_with_a_useful_message(self):
+        with self.assertRaisesRegexp(AttributeError,
+                                     "'UniqueName' object has no attribute 'x'"):
+            self.falsey_obj.x
