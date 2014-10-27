@@ -1,6 +1,6 @@
 # expect, a Python testing library
 
-### TODO: create a setup.py and put this on PyPI. Sorries!
+### TODO: create a setup.py and put this on PyPI. Sorry!
 
 This library has two features I wanted to copy from RSpec.
 
